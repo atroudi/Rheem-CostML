@@ -4,7 +4,7 @@ The learning model will be based on learning rheem core cost model using exhaust
 PS: Log generation is ensured by the `rheem-profiler` module.
 
 # Overview
-The contained ML technics currently used are: Linear regression, Random forest, Neural networks, Deep neural networks. 
+The employed ML technics currently used are: Linear regression, Random forest, Neural networks, Deep neural networks. 
 All technics are running on keras ontop of tensorFlow.
 
 ## How to Learn Rheem Cost model
