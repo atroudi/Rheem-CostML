@@ -1,6 +1,6 @@
 # Rheem-CostML
 This component is a blackbox Machine leaning module for rheem that will help to learn from profiling logs the cost in an offline mode.
-The learning model will be based on learning rheem core cost model on exhaustively generated rheem plans. 
+The learning model will be based on learning rheem core cost model using exhaustively generated rheem plans. 
 PS: Log generation is ensured by the `rheem-profiler` module.
 
 # Overview
