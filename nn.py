@@ -104,7 +104,7 @@ def main():
             for nn in nns:
                 # the data, shuffled and split between train and test sets
                 #(x_train, y_train), (x_test, y_test) = mnist.load_data()
-                inputFile = loadtxt("planVector_newShape.txt", comments="#", delimiter=" ", unpack=False)
+                inputFile = loadtxt("resources/planVector_newShape.txt", comments="#", delimiter=" ", unpack=False)
 
 
                 start = 34

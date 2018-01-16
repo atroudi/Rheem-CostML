@@ -19,17 +19,14 @@ import pickle
 
 
 #inputFile = loadtxt("planVectorsSGD2-kmeans-simword-opportuneWordcount.txt", comments="#", delimiter=" ", unpack=False)
-inputFile = loadtxt("resources/planVector_newShape.txt", comments="#", delimiter=" ", unpack=False)
+inputFile = loadtxt("mlModelVectors.txt", comments="#", delimiter=" ", unpack=False)
 
 #size = 146;
 #start = 13;
 size = 213
 start = 5
-x_train = inputFile[start:,0:size]
-y_train = inputFile[start:,size]
-
-x_test = inputFile[:start,0:size]
-y_test = inputFile[:start,size]
+x_test = inputFile[start:,0:size]
+y_test = inputFile[start:,size]
 
 # x_train = inputFile[:,0:size]
 # y_train = inputFile[:,size]
@@ -38,17 +35,11 @@ y_test = inputFile[:start,size]
 # y_test = inputFile[:,size]
 
 
-regr = RandomForestRegressor(max_depth=50, random_state=0)
-regr.fit(x_train,y_train)
 
-
-# save the model to disk
+# load the model from disk
 filename = 'ForestModel.sav'
-pickle.dump(regr, open(filename, 'wb'))
+regr = pickle.load(open(filename, 'rb'))
 
-score = regr.score(x_train,y_train)
-print(score)
-print(regr.feature_importances_)
 
 
 # fix random seed for reproducibility
@@ -67,6 +58,11 @@ for num in range(1, 34):
     else:
         print("estimated time for " + str(x_test[num][size-2]) + "-" + str(x_test[num][size-1]) + " in spark : " + str(
             prediction[num]) + "(real " + str(y_test[num]) + ")")
-results = cross_val_score(regr, x_train, y_train)
-print("Results: %.2f "%(results.mean()))
-print(results)
+
+# print results to text
+text_file = open("estimates.txt", "w")
+for num in range(1, prediction.size):
+    text_file.write("%d" % prediction[num])
+    text_file.write("\n")
+text_file.close()
+
