@@ -16,16 +16,17 @@ from sklearn.pipeline import Pipeline
 from sklearn import linear_model
 from sklearn.ensemble import RandomForestRegressor
 import pickle
-
+import os
 
 #inputFile = loadtxt("planVectorsSGD2-kmeans-simword-opportuneWordcount.txt", comments="#", delimiter=" ", unpack=False)
-inputFile = loadtxt("mlModelVectors.txt", comments="#", delimiter=" ", unpack=False)
+inputFile = loadtxt("C:\\Users\\VettaEx1\\.rheem\\mlModelVectors.txt", comments="#", delimiter=" ", unpack=False)
 
 #size = 146;
 #start = 13;
-size = 213
-start = 5
-x_test = inputFile[start:,0:size]
+#size = 213
+size=250
+start = 0
+x_test = inputFile[:,0:size]
 y_test = inputFile[start:,size]
 
 # x_train = inputFile[:,0:size]
@@ -60,7 +61,11 @@ for num in range(1, 34):
             prediction[num]) + "(real " + str(y_test[num]) + ")")
 
 # print results to text
-text_file = open("estimates.txt", "w")
+saveLocation = "estimates.txt"
+# delete first
+os.remove(saveLocation)
+text_file = open(saveLocation, "w")
+text_file.de
 for num in range(1, prediction.size):
     text_file.write("%d" % prediction[num])
     text_file.write("\n")
