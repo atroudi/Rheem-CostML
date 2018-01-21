@@ -5,12 +5,14 @@ import pickle
 import os
 
 def main():
-
     #inputFile = loadtxt("planVectorsSGD2-kmeans-simword-opportuneWordcount.txt", comments="#", delimiter=" ", unpack=False)
+
+    dirPath =os.path.dirname(os.path.realpath(__file__))
+
     if (len(sys.argv)>=2):
         inputFile = loadtxt(sys.argv[1], comments="#", delimiter=" ", unpack=False)
     else:
-        inputFile = loadtxt("C:\\Users\\FLVBSLV\\.rheem\\mlModelVectors.txt", comments="#", delimiter=" ", unpack=False)
+        inputFile = loadtxt(dirPath+"\\mlModelVectors.txt", comments="#", delimiter=" ", unpack=False)
 
     #size = 146;
     #start = 13;
@@ -29,7 +31,7 @@ def main():
 
 
     # load the model from disk
-    filename = 'ForestModel.sav'
+    filename = dirPath+'\\ForestModel.sav'
     regr = pickle.load(open(filename, 'rb'))
 
 
@@ -43,19 +45,19 @@ def main():
     #print("Results: %.2f (%.2f) MSE" % (results.mean(), results.std()))
     prediction = regr.predict(x_test)
 
-    for num in range(1, 34):
-        if num % 2 == 0:
-            print("estimated time for " + str(x_test[num][size-2]) + "-" + str(x_test[num][size-1]) + " in java : " + str(
-                prediction[num]) + "(real " + str(y_test[num]) + ")")
-        else:
-            print("estimated time for " + str(x_test[num][size-2]) + "-" + str(x_test[num][size-1]) + " in spark : " + str(
-                prediction[num]) + "(real " + str(y_test[num]) + ")")
+    # for num in range(1,min([34,len(x_test)])):
+    #     if num % 2 == 0:
+    #         print("estimated time for " + str(x_test[num][size-2]) + "-" + str(x_test[num][size-1]) + " in java : " + str(
+    #             prediction[num]) + "(real " + str(y_test[num]) + ")")
+    #     else:
+    #         print("estimated time for " + str(x_test[num][size-2]) + "-" + str(x_test[num][size-1]) + " in spark : " + str(
+    #             prediction[num]) + "(real " + str(y_test[num]) + ")")
 
     # print results to text
     if (len(sys.argv) >= 3):
         saveLocation = loadtxt(sys.argv[2], comments="#", delimiter=" ", unpack=False)
     else:
-        saveLocation = "C:\\Users\\FLVBSLV\\.rheem\\estimates.txt"
+        saveLocation = dirPath+"\\estimates.txt"
 
     # delete first
     if(os._exists(saveLocation)):
@@ -65,6 +67,7 @@ def main():
         text_file.write("%d" % prediction[num])
         text_file.write("\n")
     text_file.close()
+    print("estimation done!")
 
 if __name__ == "__main__":
    main()
