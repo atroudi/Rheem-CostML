@@ -21,6 +21,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 import sys
+import pickle
 
 batch_size = 128
 num_classes = 10
@@ -164,6 +165,10 @@ def main():
                 #score = pipeline.score(x_train,y_train)
                 #print("Results: %.2f (%.2f) MSE" % (score, score))
 
+
+                # save the model to disk
+                filename = 'nnModel',"_batchSize",str(batch_size),"_epoch",str(epoch)+'.sav'
+                pickle.dump(pipeline, open(filename, 'wb'))
                 #for num in [1,12]:
                 #    print(estimator.predict(x_train[num]))
                 #print(estimator.predict(x_train[1]))

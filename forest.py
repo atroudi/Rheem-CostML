@@ -1,14 +1,7 @@
-import keras
 import numpy
-from keras.datasets import mnist
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPooling2D
-from keras import backend as K
 
 from numpy import loadtxt
-from keras.wrappers.scikit_learn import KerasRegressor
-from sklearn.model_selection import KFold
+
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
@@ -19,11 +12,11 @@ import pickle
 
 
 #inputFile = loadtxt("planVectorsSGD2-kmeans-simword-opportuneWordcount.txt", comments="#", delimiter=" ", unpack=False)
-inputFile = loadtxt("resources/planVector_newShape.txt", comments="#", delimiter=" ", unpack=False)
+inputFile = loadtxt("resources/planVector_1D.log", comments="#", delimiter=" ", unpack=False)
 
 #size = 146;
 #start = 13;
-size = 213
+size = 251
 start = 5
 x_train = inputFile[start:,0:size]
 y_train = inputFile[start:,size]

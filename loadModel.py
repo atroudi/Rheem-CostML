@@ -17,7 +17,7 @@ def main():
     #size = 146;
     #start = 13;
     #size = 213
-    size=213
+    size=251
     start = 0
     x_test = inputFile[:,0:size]
     y_test = inputFile[start:,size]
