@@ -5,6 +5,7 @@ import pickle
 import os
 
 def main():
+
     #inputFile = loadtxt("planVectorsSGD2-kmeans-simword-opportuneWordcount.txt", comments="#", delimiter=" ", unpack=False)
 
     dirPath =os.path.dirname(os.path.realpath(__file__))
@@ -19,6 +20,10 @@ def main():
     #size = 213
     size=251
     start = 0
+    dimInputFile = inputFile.ndim
+
+    if(dimInputFile==1):
+        inputFile = numpy.reshape(inputFile, (-1,inputFile.size))
     x_test = inputFile[:,0:size]
     y_test = inputFile[start:,size]
 
@@ -63,7 +68,7 @@ def main():
     if(os._exists(saveLocation)):
         os.remove(saveLocation)
     text_file = open(saveLocation, "w")
-    for num in range(1, prediction.size):
+    for num in range(0, prediction.size):
         text_file.write("%d" % prediction[num])
         text_file.write("\n")
     text_file.close()

@@ -17,7 +17,7 @@ inputFile = loadtxt("resources/planVector_1D.log", comments="#", delimiter=" ", 
 #size = 146;
 #start = 13;
 size = 251
-start = 5
+start = 2
 x_train = inputFile[start:,0:size]
 y_train = inputFile[start:,size]
 
@@ -43,7 +43,8 @@ score = regr.score(x_train,y_train)
 print(score)
 print(regr.feature_importances_)
 
-
+# Load the model
+regr = pickle.load(open(filename, 'rb'))
 # fix random seed for reproducibility
 seed = 7
 numpy.random.seed(seed)
@@ -53,7 +54,7 @@ numpy.random.seed(seed)
 #print("Results: %.2f (%.2f) MSE" % (results.mean(), results.std()))
 prediction = regr.predict(x_test)
 
-for num in range(1, 34):
+for num in range(0, 2):
     if num % 2 == 0:
         print("estimated time for " + str(x_test[num][size-2]) + "-" + str(x_test[num][size-1]) + " in java : " + str(
             prediction[num]) + "(real " + str(y_test[num]) + ")")

@@ -28,7 +28,7 @@ num_classes = 10
 epochs = 1
 #featureVectorSize = 105;
 #featureVectorSize = 146;
-featureVectorSize = 213;
+featureVectorSize = 251;
 #nn =
 # input image dimensions
 img_rows, img_cols = 1, 105
@@ -105,10 +105,11 @@ def main():
             for nn in nns:
                 # the data, shuffled and split between train and test sets
                 #(x_train, y_train), (x_test, y_test) = mnist.load_data()
-                inputFile = loadtxt("resources/planVector_newShape.txt", comments="#", delimiter=" ", unpack=False)
+                #inputFile = loadtxt("resources/planVector_newShape.txt", comments="#", delimiter=" ", unpack=False)
+                inputFile = loadtxt("resources/planVector_1D_cleaned1.log", comments="#", delimiter=" ", unpack=False)
 
 
-                start = 34
+                start = 2
                 x_train = inputFile[start:, 0:featureVectorSize]
                 y_train = inputFile[start:, featureVectorSize]
 
@@ -160,21 +161,32 @@ def main():
 
                 #kfold = KFold(n_splits=10, random_state=seed)
                 #results = cross_val_score(estimator, x_train, y_train, cv=kfold)
+
                 pipeline = Pipeline(estimators)
                 pipeline.fit(x_train,y_train)
+
                 #score = pipeline.score(x_train,y_train)
                 #print("Results: %.2f (%.2f) MSE" % (score, score))
 
 
                 # save the model to disk
-                filename = 'nnModel',"_batchSize",str(batch_size),"_epoch",str(epoch)+'.sav'
-                pickle.dump(pipeline, open(filename, 'wb'))
+                filename = 'nnModel'+'_batchSize'+str(batch_size)+"_epoch"+str(epoch)
+                # pickle.dump(pipeline, open(filename, 'wb'))
+
+                # serialize model to JSON
+                # model_json = pipeline.to_json()
+                # with open(filename+".json", "w") as json_file:
+                #     json_file.write(model_json)
+                # # serialize weights to HDF5
+                # pipeline.save_weights(filename+".h5")
+                # print("Saved model to disk")
+
                 #for num in [1,12]:
                 #    print(estimator.predict(x_train[num]))
                 #print(estimator.predict(x_train[1]))
                 
                 prediction = pipeline.predict(x_test)
-                for num in range(1,34):
+                for num in range(0,2):
                     if num%2==0:
                         print ("estimated time for "+ str(x_test[num][featureVectorSize-2])+"-"+str(x_test[num][featureVectorSize-1]) + " in java : " + str(prediction[num]) +"(real "+ str(y_test[num])+ ")" )
                     else:
