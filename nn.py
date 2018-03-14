@@ -8,13 +8,15 @@ from __future__ import print_function
 import keras
 import numpy
 from keras.datasets import mnist
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
+from keras.models import Sequential, load_model
+from keras.layers import Dense, Dropout, Flatten, Activation, BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 
 from numpy import loadtxt
 from keras.wrappers.scikit_learn import KerasRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.externals import joblib
 from sklearn.model_selection import KFold
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import accuracy_score
@@ -84,20 +86,56 @@ def wider_model():
 	model.compile(loss='mean_squared_error', optimizer='adam')
 	return model
 
-def wider_deep_model():
+def wider_deep_model_old():
 	# create model
 	model = Sequential()
 	model.add(Dense(featureVectorSize+20, input_dim=featureVectorSize, kernel_initializer='normal', activation='relu'))
+
+	model.add(Dense(featureVectorSize//2, kernel_initializer='normal', activation='relu'))
+
 	model.add(Dense(55, kernel_initializer='normal', activation='relu'))
 	model.add(Dense(1, kernel_initializer='normal'))
 	# Compile model
 	model.compile(loss='mean_squared_error', optimizer='adam')
 	return model
 
+def wider_deep_model():
+    # create model
+    model = Sequential()
+    # model.add(
+    #     Dense(featureVectorSize + 20, input_dim=featureVectorSize, activation='relu'))
+    # model.add(Dropout(0.2))
+
+    # layer 1
+    model.add(Dense(featureVectorSize + 20,input_dim=featureVectorSize, kernel_initializer='normal'))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.2))
+    # layer 2
+    model.add(Dense(featureVectorSize//2, kernel_initializer='normal'))
+    model.add(BatchNormalization())
+    model.add(Activation('relu'))
+    model.add(Dropout(0.4))
+
+    # layer 3
+    model.add(Dense(featureVectorSize // 4, kernel_initializer='normal'))
+    model.add(BatchNormalization())
+    model.add(Activation('relu'))
+    model.add(Dropout(0.4))
+
+    # layer 3
+    model.add(Dense(1, kernel_initializer='normal'))
+    # model.add(BatchNormalization())
+    model.add(Activation('relu'))
+    # model.add(Dropout(0.4))
+    # Compile model
+    model.compile(loss='mean_squared_error', optimizer='adam')
+    return model
+
 def main():
     #sys.argv[2]
-    batch_sizes = [64]
-    epochs = [500,1000,1500]
+    batch_sizes = [128]
+    # epochs = [500,1000,1500]
+    epochs = [500]
     nns=["widedeep"]
     #nn = sys.argv[3]
     for batch_size in batch_sizes:
@@ -106,10 +144,11 @@ def main():
                 # the data, shuffled and split between train and test sets
                 #(x_train, y_train), (x_test, y_test) = mnist.load_data()
                 #inputFile = loadtxt("resources/planVector_newShape.txt", comments="#", delimiter=" ", unpack=False)
-                inputFile = loadtxt("resources/planVector_1D_cleaned1.log", comments="#", delimiter=" ", unpack=False)
+                #inputFile = loadtxt("resources/planVector_1D_java_spark_javaSpark_withplatformError.log", comments="#", delimiter=" ", unpack=False)
+                inputFile = loadtxt("resources/planVector_1D_231_221_merge_7_withSynthetic.log", comments="#", delimiter=" ", unpack=False)
 
 
-                start = 2
+                start = 64
                 x_train = inputFile[start:, 0:featureVectorSize]
                 y_train = inputFile[start:, featureVectorSize]
 
@@ -155,7 +194,9 @@ def main():
                 elif nn=="deep":
                     estimators.append(('mlp', KerasRegressor(build_fn=larger_model, epochs=epoch, batch_size=batch_size, verbose=0)))
                 elif nn=="widedeep":
-                    estimators.append(('mlp', KerasRegressor(build_fn=wider_deep_model, epochs=epoch, batch_size=batch_size, verbose=0)))
+                    model = KerasRegressor(build_fn=wider_deep_model, epochs=epoch, batch_size=batch_size, verbose=0)
+                    model2 =RandomForestRegressor(max_depth=50, random_state=0)
+                    estimators.append(('mlp', model))
 
                 print("Results with nn:"+nn+" and epoch:" + str(epoch) + "-batchsize:" + str(batch_size))
 
@@ -165,12 +206,29 @@ def main():
                 pipeline = Pipeline(estimators)
                 pipeline.fit(x_train,y_train)
 
-                #score = pipeline.score(x_train,y_train)
-                #print("Results: %.2f (%.2f) MSE" % (score, score))
+                score = pipeline.score(x_train,y_train)
+                print("Results: %.2f (%.2f) MSE" % (score, score))
 
 
-                # save the model to disk
-                filename = 'nnModel'+'_batchSize'+str(batch_size)+"_epoch"+str(epoch)
+                # save the pipeline model to disk
+                filename = 'nnModel'+'_batchSize'+str(batch_size)+"_epoch"+str(epoch)+".pkl"
+                #joblib.dump(model2, filename)
+
+                # Save the Keras model first:
+                pipeline.named_steps['mlp'].model.save('keras_model'+'_batchSize'+str(batch_size)+"_epoch"+str(epoch)+'.h5')
+
+                # This hack allows us to save the sklearn pipeline:
+                pipeline.named_steps['mlp'].model = None
+
+                # Finally, save the pipeline:
+                joblib.dump(pipeline, filename)
+
+                # Load the pipeline first:
+                pipeline = joblib.load(filename)
+
+                # Then, load the Keras model:
+                pipeline.named_steps['mlp'].model = load_model('keras_model'+'_batchSize'+str(batch_size)+"_epoch"+str(epoch)+'.h5')
+
                 # pickle.dump(pipeline, open(filename, 'wb'))
 
                 # serialize model to JSON
@@ -186,11 +244,11 @@ def main():
                 #print(estimator.predict(x_train[1]))
                 
                 prediction = pipeline.predict(x_test)
-                for num in range(0,2):
+                for num in range(0,start):
                     if num%2==0:
-                        print ("estimated time for "+ str(x_test[num][featureVectorSize-2])+"-"+str(x_test[num][featureVectorSize-1]) + " in java : " + str(prediction[num]) +"(real "+ str(y_test[num])+ ")" )
+                        print ("estimated time for "+ str(x_test[num][featureVectorSize-2])+"-"+str(x_test[num][featureVectorSize-1]) + " in java : %.2f " % (prediction[num]) +"(real "+ str(y_test[num])+ ")" )
                     else:
-                        print ("estimated time for "+ str(x_test[num][featureVectorSize-2])+"-"+str(x_test[num][featureVectorSize-1]) + " in spark : " + str(prediction[num]) +"(real "+ str(y_test[num])+ ")" )
+                        print ("estimated time for "+ str(x_test[num][featureVectorSize-2])+"-"+str(x_test[num][featureVectorSize-1]) + " in spark : %.2f " % (prediction[num]) +"(real "+ str(y_test[num])+ ")" )
 
                 #kfold = KFold(n_splits=10, random_state=seed)
                 #results = cross_val_score(pipeline, x_train, y_train, cv=kfold)

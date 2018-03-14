@@ -83,8 +83,9 @@ def main():
                 # the data, shuffled and split between train and test sets
                 #(x_train, y_train), (x_test, y_test) = mnist.load_data()
                 #inputFile = numpy.genfromtxt("logExecutionPlan", comments="#", delimiter=" ", unpack=False)
+                # with open(r'logExecutionPlan') as f:
 
-                with open(r'logExecutionPlan') as f:
+                with open(r'resources/logExecutionPlan') as f:
                     a = f.read().splitlines()
                     for i in range(traningDataNumber):
                         imgI = numpy.loadtxt(a[i * 10 + i:((i + 1) * 10) + i - 1], comments="#", delimiter=" ", unpack=False)

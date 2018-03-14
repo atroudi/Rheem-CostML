@@ -37,3 +37,4 @@ for num in range(1, 17):
             prediction[num]) + "(real " + str(y_train[num]) + ")")
 
 print(cross_val_score(clf, x_train, y_train))
+
