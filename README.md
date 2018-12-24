@@ -1,3 +1,9 @@
+
+## Prerequisites
+1. Python (3.5.x or 3.6.x)
+2. Keras
+3. TensorFlow
+
 # Rheem-CostML
 This component is a blackbox Machine leaning module for rheem that will help to learn from profiling logs the cost in an offline mode.
 The learning model will be based on learning rheem core cost model using exhaustively generated rheem plans. 
