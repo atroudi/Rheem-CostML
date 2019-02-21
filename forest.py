@@ -12,7 +12,8 @@ import pickle
 
 
 #inputFile = loadtxt("planVectorsSGD2-kmeans-simword-opportuneWordcount.txt", comments="#", delimiter=" ", unpack=False)
-inputFile = loadtxt("resources/planVector_1D_231_221_merge_7_3.log", comments="#", delimiter=" ", unpack=False)
+# inputFile = loadtxt("resources/planVector_1D_231_221_merge_7_3.log", comments="#", delimiter=" ", unpack=False)
+inputFile = loadtxt("resources/planVector_1D_231_run3_2.log", comments="#", delimiter=" ", unpack=False)
 
 #size = 146;
 #start = 13;
@@ -62,6 +63,7 @@ for num in range(0, start):
     else:
         print("estimated time for " + str(x_test[num][size-2]) + "-" + str(x_test[num][size-1]) + " in spark : " + str(
             prediction[num]) + "(real " + str(y_test[num]) + ")")
+
 # results = cross_val_score(regr, x_train, y_train)
 # print("Results: %.2f "%(results.mean()))
 # print(results)
